@@ -255,6 +255,9 @@ class IntlPhoneField extends StatefulWidget {
   /// If null, default magnification configuration will be used.
   final TextMagnifierConfiguration? magnifierConfiguration;
 
+  /// If true, the field will not be validated, Default is false.
+  final bool isOptional;
+
   const IntlPhoneField({
     Key? key,
     this.formFieldKey,
@@ -304,6 +307,7 @@ class IntlPhoneField extends StatefulWidget {
     this.pickerDialogStyle,
     this.flagsButtonMargin = EdgeInsets.zero,
     this.magnifierConfiguration,
+    this.isOptional = false,
   }) : super(key: key);
 
   @override
@@ -414,29 +418,32 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
       onChanged: (value) async {
         widget.onChanged?.call(_phoneNumberFrom(value));
       },
-      validator: (value) {
-        if (value == null) {
-          return widget.phoneNumberIsRequired;
-        }
+      validator: widget.isOptional
+          ? null
+          : (value) {
+              if (value == null) {
+                return widget.phoneNumberIsRequired;
+              }
 
-        if (!isNumeric(value)) {
-          return widget.invalidNumberMessage;
-        }
+              if (!isNumeric(value)) {
+                return widget.invalidNumberMessage;
+              }
 
-        final number = _phoneNumberFrom(value);
+              final number = _phoneNumberFrom(value);
 
-        if (number.number.isEmpty) {
-          return widget.phoneNumberIsRequired;
-        }
+              if (number.number.isEmpty) {
+                return widget.phoneNumberIsRequired;
+              }
 
-        if (widget.disableLengthCheck) return widget.validator?.call(number);
+              if (widget.disableLengthCheck)
+                return widget.validator?.call(number);
 
-        if (!_isPhoneNumberLengthValid(value)) {
-          return widget.invalidNumberMessage;
-        }
+              if (!_isPhoneNumberLengthValid(value)) {
+                return widget.invalidNumberMessage;
+              }
 
-        return widget.validator?.call(_phoneNumberFrom(value));
-      },
+              return widget.validator?.call(_phoneNumberFrom(value));
+            },
       maxLength: widget.disableLengthCheck ? null : _selectedCountry.maxLength,
       keyboardType: widget.keyboardType,
       inputFormatters: widget.inputFormatters,
