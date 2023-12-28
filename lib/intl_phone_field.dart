@@ -1,6 +1,7 @@
 library intl_phone_field;
 
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -421,6 +422,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
       validator: widget.isOptional
           ? null
           : (value) {
+              log(value.toString(), name: 'PhoneNumber');
               if (value == null) {
                 return widget.phoneNumberIsRequired;
               }
@@ -435,14 +437,15 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
                 return widget.phoneNumberIsRequired;
               }
 
-              if (widget.disableLengthCheck)
+              if (widget.disableLengthCheck) {
                 return widget.validator?.call(number);
+              }
 
               if (!_isPhoneNumberLengthValid(value)) {
                 return widget.invalidNumberMessage;
               }
 
-              return widget.validator?.call(_phoneNumberFrom(value));
+              return widget.validator?.call(number);
             },
       maxLength: widget.disableLengthCheck ? null : _selectedCountry.maxLength,
       keyboardType: widget.keyboardType,
