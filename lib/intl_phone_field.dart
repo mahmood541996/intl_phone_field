@@ -423,11 +423,16 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
           return widget.invalidNumberMessage;
         }
 
-        if (!widget.disableLengthCheck) {
-          return value.length >= _selectedCountry.minLength &&
-                  value.length <= _selectedCountry.maxLength
-              ? null
-              : widget.invalidNumberMessage;
+        final number = _phoneNumberFrom(value);
+
+        if (number.number.isEmpty) {
+          return widget.phoneNumberIsRequired;
+        }
+
+        if (widget.disableLengthCheck) return widget.validator?.call(number);
+
+        if (!_isPhoneNumberLengthValid(value)) {
+          return widget.invalidNumberMessage;
         }
 
         return widget.validator?.call(_phoneNumberFrom(value));
@@ -449,6 +454,11 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
       countryCode: '+${_selectedCountry.fullCountryCode}',
       number: value,
     );
+  }
+
+  bool _isPhoneNumberLengthValid(String value) {
+    return value.length >= _selectedCountry.minLength &&
+        value.length <= _selectedCountry.maxLength;
   }
 
   Container _buildFlagsButton() {
