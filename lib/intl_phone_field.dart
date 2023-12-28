@@ -1,6 +1,7 @@
 library intl_phone_field;
 
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -409,6 +410,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
         widget.onChanged?.call(_phoneNumberFrom(value));
       },
       validator: (value) {
+        log(value.toString(), name: 'phoneNumber');
         if (value == null || !isNumeric(value)) {
           return widget.invalidNumberMessage;
         }
