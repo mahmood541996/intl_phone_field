@@ -428,14 +428,14 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
           return widget.phoneNumberIsRequired;
         }
 
-        if (!isNumeric(value)) {
-          return widget.invalidNumberMessage;
-        }
-
         final number = _phoneNumberFrom(value);
 
         if (number.number.isEmpty) {
           return widget.phoneNumberIsRequired;
+        }
+
+        if (!isNumeric(value)) {
+          return widget.invalidNumberMessage;
         }
 
         if (widget.disableLengthCheck) {
