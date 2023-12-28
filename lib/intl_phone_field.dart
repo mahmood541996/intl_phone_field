@@ -419,34 +419,35 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
       onChanged: (value) async {
         widget.onChanged?.call(_phoneNumberFrom(value));
       },
-      validator: widget.isOptional
-          ? null
-          : (value) {
-              log(value.toString(), name: 'PhoneNumber');
-              if (value == null) {
-                return widget.phoneNumberIsRequired;
-              }
+      validator: (value) {
+        if (widget.isOptional) return null;
 
-              if (!isNumeric(value)) {
-                return widget.invalidNumberMessage;
-              }
+        log(value.toString());
 
-              final number = _phoneNumberFrom(value);
+        if (value == null) {
+          return widget.phoneNumberIsRequired;
+        }
 
-              if (number.number.isEmpty) {
-                return widget.phoneNumberIsRequired;
-              }
+        if (!isNumeric(value)) {
+          return widget.invalidNumberMessage;
+        }
 
-              if (widget.disableLengthCheck) {
-                return widget.validator?.call(number);
-              }
+        final number = _phoneNumberFrom(value);
 
-              if (!_isPhoneNumberLengthValid(value)) {
-                return widget.invalidNumberMessage;
-              }
+        if (number.number.isEmpty) {
+          return widget.phoneNumberIsRequired;
+        }
 
-              return widget.validator?.call(number);
-            },
+        if (widget.disableLengthCheck) {
+          return widget.validator?.call(number);
+        }
+
+        if (!_isPhoneNumberLengthValid(value)) {
+          return widget.invalidNumberMessage;
+        }
+
+        return widget.validator?.call(number);
+      },
       maxLength: widget.disableLengthCheck ? null : _selectedCountry.maxLength,
       keyboardType: widget.keyboardType,
       inputFormatters: widget.inputFormatters,
