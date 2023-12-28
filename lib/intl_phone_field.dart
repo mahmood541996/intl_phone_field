@@ -1,7 +1,6 @@
 library intl_phone_field;
 
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -204,7 +203,12 @@ class IntlPhoneField extends StatefulWidget {
   /// Default value is `true`.
   final bool showCountryFlag;
 
-  /// Message to be displayed on autoValidate error
+  /// Message to be displayed when number is null or empty.
+  ///
+  /// Default value is `Phone number is required`.
+  final String? phoneNumberIsRequired;
+
+  /// Message to be displayed when number is not a numeric value or doesn't meet preferred length.
   ///
   /// Default value is `Invalid Mobile Number`.
   final String? invalidNumberMessage;
@@ -291,6 +295,7 @@ class IntlPhoneField extends StatefulWidget {
     this.cursorColor,
     this.disableLengthCheck = false,
     this.flagsButtonPadding = EdgeInsets.zero,
+    this.phoneNumberIsRequired = 'Phone number is required',
     this.invalidNumberMessage = 'Invalid Mobile Number',
     this.cursorHeight,
     this.cursorRadius = Radius.zero,
@@ -410,16 +415,21 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
         widget.onChanged?.call(_phoneNumberFrom(value));
       },
       validator: (value) {
-        log(value.toString(), name: 'phoneNumber');
-        if (value == null || !isNumeric(value)) {
+        if (value == null) {
+          return widget.phoneNumberIsRequired;
+        }
+
+        if (!isNumeric(value)) {
           return widget.invalidNumberMessage;
         }
+
         if (!widget.disableLengthCheck) {
           return value.length >= _selectedCountry.minLength &&
                   value.length <= _selectedCountry.maxLength
               ? null
               : widget.invalidNumberMessage;
         }
+
         return widget.validator?.call(_phoneNumberFrom(value));
       },
       maxLength: widget.disableLengthCheck ? null : _selectedCountry.maxLength,
