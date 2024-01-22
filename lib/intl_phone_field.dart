@@ -1,7 +1,6 @@
 library intl_phone_field;
 
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -319,25 +318,24 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
   late List<Country> _countryList;
   late Country _selectedCountry;
   late List<Country> filteredCountries;
-  late String number;
-
-  String? validatorMessage;
+  late String _initialNumber;
+  late String _currentNumber;
 
   @override
   void initState() {
     super.initState();
     _countryList = widget.countries ?? countries;
     filteredCountries = _countryList;
-    number = widget.initialValue ?? '';
-    if (widget.initialCountryCode == null && number.startsWith('+')) {
-      number = number.substring(1);
+    _initialNumber = widget.initialValue ?? '';
+    if (widget.initialCountryCode == null && _initialNumber.startsWith('+')) {
+      _initialNumber = _initialNumber.substring(1);
       // parse initial value
       _selectedCountry = countries.firstWhere(
-          (country) => number.startsWith(country.fullCountryCode),
+          (country) => _initialNumber.startsWith(country.fullCountryCode),
           orElse: () => _countryList.first);
 
       // remove country code from the initial number value
-      number = number.replaceFirst(
+      _initialNumber = _initialNumber.replaceFirst(
           RegExp("^${_selectedCountry.fullCountryCode}"), "");
     } else {
       _selectedCountry = _countryList.firstWhere(
@@ -345,14 +343,16 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
           orElse: () => _countryList.first);
 
       // remove country code from the initial number value
-      if (number.startsWith('+')) {
-        number = number.replaceFirst(
+      if (_initialNumber.startsWith('+')) {
+        _initialNumber = _initialNumber.replaceFirst(
             RegExp("^\\+${_selectedCountry.fullCountryCode}"), "");
       } else {
-        number = number.replaceFirst(
+        _initialNumber = _initialNumber.replaceFirst(
             RegExp("^${_selectedCountry.fullCountryCode}"), "");
       }
     }
+
+    _currentNumber = _initialNumber;
   }
 
   Future<void> _changeCountry() async {
@@ -371,6 +371,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
           onCountryChanged: (Country country) {
             _selectedCountry = country;
             widget.onCountryChanged?.call(country);
+            widget.onChanged?.call(_phoneNumberFrom(_currentNumber));
             setState(() {});
           },
         ),
@@ -383,7 +384,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
   Widget build(BuildContext context) {
     return TextFormField(
       key: widget.formFieldKey,
-      initialValue: (widget.controller == null) ? number : null,
+      initialValue: (widget.controller == null) ? _initialNumber : null,
       autofillHints: widget.disableAutoFillHints
           ? null
           : [AutofillHints.telephoneNumberNational],
@@ -417,12 +418,11 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
         );
       },
       onChanged: (value) async {
+        _currentNumber = value;
         widget.onChanged?.call(_phoneNumberFrom(value));
       },
       validator: (value) {
         if (widget.isOptional) return null;
-
-        log(value.toString());
 
         if (value == null) {
           return widget.phoneNumberIsRequired;
