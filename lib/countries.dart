@@ -3131,7 +3131,7 @@ const List<Country> countries = [
     code: "ID",
     dialCode: "62",
     minLength: 10,
-    maxLength: 13,
+    maxLength: 11,
   ),
   Country(
     name: "Iran, Islamic Republic of Persian Gulf",
