@@ -258,6 +258,9 @@ class IntlPhoneField extends StatefulWidget {
   /// If true, the field will not be validated, Default is false.
   final bool isOptional;
 
+  /// If true, the field can show dialog for countries, Default is true
+  final bool canOpenCountrySelector;
+
   const IntlPhoneField({
     Key? key,
     this.formFieldKey,
@@ -308,6 +311,7 @@ class IntlPhoneField extends StatefulWidget {
     this.flagsButtonMargin = EdgeInsets.zero,
     this.magnifierConfiguration,
     this.isOptional = false,
+    this.canOpenCountrySelector = true,
   }) : super(key: key);
 
   @override
@@ -479,7 +483,9 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
         decoration: widget.dropdownDecoration,
         child: InkWell(
           borderRadius: widget.dropdownDecoration.borderRadius as BorderRadius?,
-          onTap: widget.enabled ? _changeCountry : null,
+          onTap: widget.enabled || widget.canOpenCountrySelector
+              ? _changeCountry
+              : null,
           child: Padding(
             padding: widget.flagsButtonPadding,
             child: Row(
