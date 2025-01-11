@@ -483,7 +483,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
         decoration: widget.dropdownDecoration,
         child: InkWell(
           borderRadius: widget.dropdownDecoration.borderRadius as BorderRadius?,
-          onTap: widget.enabled || widget.canOpenCountrySelector
+          onTap: widget.enabled && widget.canOpenCountrySelector
               ? _changeCountry
               : null,
           child: Padding(
