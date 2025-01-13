@@ -261,6 +261,9 @@ class IntlPhoneField extends StatefulWidget {
   /// If true, the field can show dialog for countries, Default is true
   final bool canOpenCountrySelector;
 
+  /// If true, the field will accept non-numeric input, Default is false
+  final bool allowNonNumericInput;
+
   const IntlPhoneField({
     Key? key,
     this.formFieldKey,
@@ -312,6 +315,7 @@ class IntlPhoneField extends StatefulWidget {
     this.magnifierConfiguration,
     this.isOptional = false,
     this.canOpenCountrySelector = true,
+    this.allowNonNumericInput = false,
   }) : super(key: key);
 
   @override
@@ -438,7 +442,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
           return widget.phoneNumberIsRequired;
         }
 
-        if (!isNumeric(value)) {
+        if (!isNumeric(value) && !widget.allowNonNumericInput) {
           return widget.invalidNumberMessage;
         }
 
